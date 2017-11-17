@@ -22,12 +22,12 @@ public class MainActivity extends AppCompatActivity {
         //String to place our result in
         String result;
 
-        //Instantiate new instance of our class
+        //Instantiate new instance of GetDataAsyncTask class
         GetDataAsyncTask getRequest = new GetDataAsyncTask();
 
         //Perform the doInBackground method, passing in our url
         try {
-            result = getRequest.execute().get();
+            result = getRequest.execute().get(); // TODO: 17.11.2017 try to remove get() and do it only via execute() 
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             result = "";
