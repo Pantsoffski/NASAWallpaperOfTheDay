@@ -1,5 +1,7 @@
 package pl.smartfan.nasawallpaperoftheday;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 
 import java.io.IOException;
@@ -12,7 +14,7 @@ import java.net.URL;
  * Class {@link GetDataAsyncTask} is a AsyncTask to leech JSON data from NASA.
  */
 
-public class GetDataAsyncTask extends AsyncTask<URL, Void, InputStream> {
+public class GetDataAsyncTask extends AsyncTask<URL, Void, Bitmap> {
 
     private static final String REQUEST_METHOD = "GET";
     private static final int READ_TIMEOUT = 15000;
@@ -20,9 +22,10 @@ public class GetDataAsyncTask extends AsyncTask<URL, Void, InputStream> {
     public AsyncResponse delegate = null;
 
     @Override
-    protected InputStream doInBackground(URL... urls) {
+    protected Bitmap doInBackground(URL... urls) {
+
         String urlToGet = "https://api.nasa.gov/planetary/apod?api_key=GmIPSectIKdfHDCcnoFZpupFfex71nm9WODSejKu"; // TODO: 16.11.2017 this is just test url, change it with proper nasa api key
-        InputStream result;
+        Bitmap result;
         InputStreamReader streamReader;
 
         try {
@@ -36,8 +39,6 @@ public class GetDataAsyncTask extends AsyncTask<URL, Void, InputStream> {
             connection.setRequestMethod(REQUEST_METHOD);
             connection.setReadTimeout(READ_TIMEOUT);
             connection.setConnectTimeout(CONNECTION_TIMEOUT);
-            //connection.setDoInput(true);
-            //connection.setDoOutput(true);
 
             //Connect to our url
             connection.connect();
@@ -45,10 +46,15 @@ public class GetDataAsyncTask extends AsyncTask<URL, Void, InputStream> {
             //Create a new InputStreamReader
             streamReader = new InputStreamReader(connection.getInputStream());
 
+            //Create WallpaperCreator object
             WallpaperCreator wallpaperCreator = new WallpaperCreator();
 
-            result = new URL(wallpaperCreator.readJsonStream(streamReader)).openStream();
-            // TODO: 17.11.2017 add comments
+            //Get InputStream (wallpaper image) from desired URL
+            InputStream inputStream = new URL(wallpaperCreator.readJsonStream(streamReader, "hdurl")).openStream();
+
+            //Decode stream to Bitmap
+            result = BitmapFactory.decodeStream(inputStream);
+
         } catch (IOException e) {
             e.printStackTrace();
             result = null;
@@ -58,7 +64,8 @@ public class GetDataAsyncTask extends AsyncTask<URL, Void, InputStream> {
     }
 
     @Override
-    protected void onPostExecute(InputStream result) {
+    protected void onPostExecute(Bitmap result) {
+        //Call interface
         delegate.processFinish(result);
     }
 }

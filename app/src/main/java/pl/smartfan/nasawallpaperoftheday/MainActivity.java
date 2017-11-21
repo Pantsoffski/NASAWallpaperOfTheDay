@@ -1,23 +1,23 @@
 package pl.smartfan.nasawallpaperoftheday;
 
 import android.app.WallpaperManager;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements AsyncResponse {
-    private InputStream nasaLeeched = null;
+
+    private Bitmap nasaLeeched = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // TODO: 16.11.2017 set wallpaper with leeched photo
         try {
             nasaLeech();
         } catch (MalformedURLException e) {
@@ -36,17 +36,16 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
         getRequest.delegate = this;
 
         //Perform the doInBackground method, passing in our url
-        getRequest.execute(url); // TODO: 17.11.2017 try to remove get() and do it only via execute()
+        getRequest.execute(url);
     }
 
     @Override
-    public void processFinish(InputStream output) {
+    public void processFinish(Bitmap output) {
         nasaLeeched = output;
-        //Log.v("Result:", nasaLeeched);
 
         WallpaperManager wpm = WallpaperManager.getInstance(this);
         try {
-            wpm.setStream(nasaLeeched); // TODO: 20.11.2017 fix NetworkOnMainThreadException 
+            wpm.setBitmap(nasaLeeched);
         } catch (IOException e) {
             e.printStackTrace();
         }

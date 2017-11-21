@@ -13,16 +13,17 @@ public class WallpaperCreator {
 
     private String stringToReturn = "";
 
-    public String readJsonStream(InputStreamReader streamReader) throws IOException {
+    public String readJsonStream(InputStreamReader streamReader, String desiredData) throws IOException {
         JsonReader jsonReader = new JsonReader(streamReader);
 
         try {
             jsonReader.beginObject(); //consume the object's opening brace
-            while (jsonReader.hasNext()) { // TODO: 17.11.2017 add comments
+            while (jsonReader.hasNext()) {
                 String fetchedData = jsonReader.nextName();
-                if (fetchedData.equals("url")) { // Check if desired data is available
+                if (fetchedData.equals(desiredData)) { // Check if desired data is available
                     while (jsonReader.hasNext()) {
                         stringToReturn = jsonReader.nextString();
+                        //Log.v("Result:", stringToReturn);
                     }
                 } else {
                     jsonReader.skipValue(); // Skip values of other names
