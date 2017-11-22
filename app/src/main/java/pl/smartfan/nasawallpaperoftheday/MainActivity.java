@@ -40,8 +40,8 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
     }
 
     @Override
-    public void processFinish(Bitmap output) {
-        nasaLeeched = output;
+    public void processFinish(Object[] results) {
+        nasaLeeched = (Bitmap) results[0]; // TODO: 22.11.2017 modify AsyncTask and AsyncResponse interface to get explanation and title (beside hdurl) from JSON
 
         WallpaperManager wpm = WallpaperManager.getInstance(this);
         try {
