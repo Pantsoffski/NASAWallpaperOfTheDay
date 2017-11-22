@@ -49,5 +49,18 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        //this is for future functions (change wallpaper with instant crop option)
+        /*Intent intent = new Intent(WallpaperManager.ACTION_CROP_AND_SET_WALLPAPER);
+        Uri myImageUro = Uri.
+        wpm.getCropAndSetWallpaperIntent(getImageUri(this, nasaLeeched));*/
     }
+
+    //this is for future functions (change wallpaper with instant crop option)
+    /*public Uri getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+        return Uri.parse(path);
+    }*/
 }

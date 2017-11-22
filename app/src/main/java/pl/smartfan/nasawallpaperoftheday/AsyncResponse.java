@@ -7,5 +7,5 @@ import android.graphics.Bitmap;
  */
 
 public interface AsyncResponse {
-    void processFinish(Bitmap output);
+    void processFinish(Bitmap results);
 }
