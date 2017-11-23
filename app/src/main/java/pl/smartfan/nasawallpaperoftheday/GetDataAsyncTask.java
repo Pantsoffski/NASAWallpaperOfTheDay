@@ -1,6 +1,5 @@
 package pl.smartfan.nasawallpaperoftheday;
 
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 
@@ -14,7 +13,7 @@ import java.net.URL;
  * Class {@link GetDataAsyncTask} is a AsyncTask to leech JSON data from NASA.
  */
 
-public class GetDataAsyncTask extends AsyncTask<URL, Void, Bitmap> {
+public class GetDataAsyncTask extends AsyncTask<URL, Void, Object[]> {
 
     private static final String REQUEST_METHOD = "GET";
     private static final int READ_TIMEOUT = 15000;
@@ -22,10 +21,10 @@ public class GetDataAsyncTask extends AsyncTask<URL, Void, Bitmap> {
     public AsyncResponse delegate = null;
 
     @Override
-    protected Bitmap doInBackground(URL... urls) {
+    protected Object[] doInBackground(URL... urls) {
 
         String urlToGet = "https://api.nasa.gov/planetary/apod?api_key=GmIPSectIKdfHDCcnoFZpupFfex71nm9WODSejKu"; // TODO: 16.11.2017 this is just test url, change it with proper nasa api key
-        Bitmap result;
+        Object[] results = new Object[3];
         InputStreamReader streamReader;
 
         try {
@@ -50,22 +49,25 @@ public class GetDataAsyncTask extends AsyncTask<URL, Void, Bitmap> {
             WallpaperCreator wallpaperCreator = new WallpaperCreator();
 
             //Get InputStream (wallpaper image) from desired URL
-            InputStream inputStream = new URL(wallpaperCreator.readJsonStream(streamReader, "hdurl")).openStream();
+            String[] stringsFromWallpaperCreator = wallpaperCreator.readJsonStream(streamReader);
+            InputStream inputStream = new URL(stringsFromWallpaperCreator[1]).openStream();
 
             //Decode stream to Bitmap
-            result = BitmapFactory.decodeStream(inputStream);
+            results[0] = BitmapFactory.decodeStream(inputStream);
+            results[1] = stringsFromWallpaperCreator[0];
+            results[2] = stringsFromWallpaperCreator[2];
 
         } catch (IOException e) {
             e.printStackTrace();
-            result = null;
+            results = null;
         }
 
-        return result;
+        return results;
     }
 
     @Override
-    protected void onPostExecute(Bitmap result) {
+    protected void onPostExecute(Object[] results) {
         //Call interface
-        delegate.processFinish(result);
+        delegate.processFinish(results);
     }
 }

@@ -1,6 +1,7 @@
 package pl.smartfan.nasawallpaperoftheday;
 
 import android.util.JsonReader;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,20 +12,24 @@ import java.io.InputStreamReader;
 
 public class WallpaperCreator {
 
-    private String stringToReturn = "";
+    private String[] stringToReturn = new String[3];
 
-    public String readJsonStream(InputStreamReader streamReader, String desiredData) throws IOException {
+    public String[] readJsonStream(InputStreamReader streamReader) throws IOException {
         JsonReader jsonReader = new JsonReader(streamReader);
 
         try {
             jsonReader.beginObject(); //consume the object's opening brace
             while (jsonReader.hasNext()) {
                 String fetchedData = jsonReader.nextName();
-                if (fetchedData.equals(desiredData)) { // Check if desired data is available
-                    while (jsonReader.hasNext()) {
-                        stringToReturn = jsonReader.nextString();
-                        //Log.v("Result:", stringToReturn);
-                    }
+                if (fetchedData.equals("explanation")) { // Check if desired data is available
+                    stringToReturn[0] = jsonReader.nextString();
+                    Log.v("Result:", stringToReturn[0]);
+                } else if (fetchedData.equals("hdurl")) {
+                    stringToReturn[1] = jsonReader.nextString();
+                    Log.v("Result:", stringToReturn[1]);
+                } else if (fetchedData.equals("title")) {
+                    stringToReturn[2] = jsonReader.nextString();
+                    Log.v("Result:", stringToReturn[2]);
                 } else {
                     jsonReader.skipValue(); // Skip values of other names
                 }

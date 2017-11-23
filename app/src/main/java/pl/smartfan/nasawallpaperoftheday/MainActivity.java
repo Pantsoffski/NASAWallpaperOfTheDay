@@ -11,8 +11,6 @@ import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements AsyncResponse {
 
-    private Bitmap nasaLeeched = null;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,7 +20,6 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
             nasaLeech();
         } catch (MalformedURLException e) {
             e.printStackTrace();
-            nasaLeeched = null;
         }
     }
 
@@ -41,11 +38,11 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
 
     @Override
     public void processFinish(Object[] results) {
-        nasaLeeched = (Bitmap) results[0]; // TODO: 22.11.2017 modify AsyncTask and AsyncResponse interface to get explanation and title (beside hdurl) from JSON
+        // TODO: 22.11.2017 modify AsyncTask and AsyncResponse interface to get explanation and title (beside hdurl) from JSON
 
         WallpaperManager wpm = WallpaperManager.getInstance(this);
         try {
-            wpm.setBitmap(nasaLeeched);
+            wpm.setBitmap((Bitmap) results[0]);
         } catch (IOException e) {
             e.printStackTrace();
         }
