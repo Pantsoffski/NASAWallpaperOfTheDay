@@ -23,13 +23,12 @@ public class GetDataAsyncTask extends AsyncTask<URL, Void, Object[]> {
     @Override
     protected Object[] doInBackground(URL... urls) {
 
-        String urlToGet = "https://api.nasa.gov/planetary/apod?api_key=GmIPSectIKdfHDCcnoFZpupFfex71nm9WODSejKu"; // TODO: 16.11.2017 this is just test url, change it with proper nasa api key
         Object[] results = new Object[3];
         InputStreamReader streamReader;
 
         try {
             //Create a URL object holding our url
-            URL myUrl = new URL(urlToGet);
+            URL myUrl = urls[0];
 
             //Create a connection
             HttpURLConnection connection = (HttpURLConnection) myUrl.openConnection();
@@ -53,9 +52,9 @@ public class GetDataAsyncTask extends AsyncTask<URL, Void, Object[]> {
             InputStream inputStream = new URL(stringsFromWallpaperCreator[1]).openStream();
 
             //Decode stream to Bitmap
-            results[0] = BitmapFactory.decodeStream(inputStream);
-            results[1] = stringsFromWallpaperCreator[0];
-            results[2] = stringsFromWallpaperCreator[2];
+            results[0] = BitmapFactory.decodeStream(inputStream); //image
+            results[1] = stringsFromWallpaperCreator[0]; //explanation
+            results[2] = stringsFromWallpaperCreator[2]; //title
 
         } catch (IOException e) {
             e.printStackTrace();
