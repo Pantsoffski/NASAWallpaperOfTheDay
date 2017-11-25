@@ -3,12 +3,20 @@ package pl.smartfan.nasawallpaperoftheday;
 import android.app.WallpaperManager;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.PopupWindow;
 import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,7 +28,9 @@ import java.net.URL;
 public class MainActivity extends AppCompatActivity implements AsyncResponse {
 
     TextView explanation, title;
+    Button btn;
     ConstraintLayout layout;
+    CharSequence explanationText, titleText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,16 +38,46 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
         setContentView(R.layout.activity_main);
 
         layout = findViewById(R.id.mainLayout);
-        explanation = findViewById(R.id.explanation);
-        title = findViewById(R.id.title);
+        btn = findViewById(R.id.button);
 
         try {
             nasaLeech();
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
+
+        //set onClickListener on button
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Show popup window with explanation, title and credits when button is clicked
+                LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View popUpWindowLayout = null;
+                if (inflater != null) {
+                    popUpWindowLayout = inflater.inflate(R.layout.popup_window, null);
+                }
+                PopupWindow window = new PopupWindow(popUpWindowLayout, layout.getWidth() - 50, ConstraintLayout.LayoutParams.WRAP_CONTENT, true);
+
+                explanation = popUpWindowLayout.findViewById(R.id.explanation);
+                title = popUpWindowLayout.findViewById(R.id.title);
+
+                window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                window.setAnimationStyle(R.style.Animation);
+                //window.setElevation(50);
+
+                window.showAtLocation(layout, Gravity.CENTER, 0, -25);
+
+                //If explanationText contains text
+                if (explanationText.length() != 0) {
+                    //Fill MainActivity with photo & explanation & title & credits
+                    explanation.setText(explanationText);
+                    title.setText(titleText);
+                }
+            }
+        });
     }
 
+    //method responsible for data leeching from NASA servers
     private void nasaLeech() throws MalformedURLException {
         //URL to send to AsyncTask
         URL url = new URL("https://api.nasa.gov/planetary/apod?api_key=GmIPSectIKdfHDCcnoFZpupFfex71nm9WODSejKu");
@@ -51,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
         getRequest.execute(url);
     }
 
+    //method fired after AsyncTask finished
     @Override
     public void processFinish(Object[] results) {
 
@@ -75,10 +116,6 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
 
         //Show toast message that wallpaper was loaded or reloaded
         Toast.makeText(this, R.string.toast_loaded_reloaded, Toast.LENGTH_LONG).show();
-
-        //Fill MainActivity with photo & explanation & title & credits
-        explanation.setText((CharSequence) results[1]);
-        title.setText((CharSequence) results[2]);
 
         Bitmap srcBmp = (Bitmap) results[0];
         Bitmap dstBmp;
@@ -110,6 +147,13 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
 
         //Set drawable as wallpaper
         layout.setBackground(drawable);
+
+        //Set leeched text to variables (used in showPopUpWindow method)
+        explanationText = (CharSequence) results[1];
+        titleText = (CharSequence) results[2];
+
+        //make button visible
+        btn.setVisibility(View.VISIBLE);
 
         //this is for future functions (change wallpaper with instant crop option)
         /*Intent intent = new Intent(WallpaperManager.ACTION_CROP_AND_SET_WALLPAPER);
