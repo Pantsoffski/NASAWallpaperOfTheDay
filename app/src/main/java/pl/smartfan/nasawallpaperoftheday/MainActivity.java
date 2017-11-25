@@ -14,9 +14,11 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.PopupWindow;
+import android.widget.ProgressBar;
 import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,17 +29,20 @@ import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements AsyncResponse {
 
-    TextView explanation, title;
+    TextView explanation, title, copyright;
     Button btn;
     ConstraintLayout layout;
-    CharSequence explanationText, titleText;
+    ProgressBar progressBar;
+    CharSequence explanationText, titleText, copyrightText;
 
+    // TODO: 25.11.2017 change wallpaper everyday
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         layout = findViewById(R.id.mainLayout);
+        progressBar = findViewById(R.id.progressBar);
         btn = findViewById(R.id.button);
 
         try {
@@ -48,22 +53,37 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
 
         //set onClickListener on button
         btn.setOnClickListener(new View.OnClickListener() {
+
             @Override
-            public void onClick(View view) {
+            public void onClick(final View view) {
                 //Show popup window with explanation, title and credits when button is clicked
                 LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 View popUpWindowLayout = null;
                 if (inflater != null) {
                     popUpWindowLayout = inflater.inflate(R.layout.popup_window, null);
                 }
-                PopupWindow window = new PopupWindow(popUpWindowLayout, layout.getWidth() - 50, ConstraintLayout.LayoutParams.WRAP_CONTENT, true);
+                final PopupWindow window = new PopupWindow(popUpWindowLayout, layout.getWidth() - 50, ConstraintLayout.LayoutParams.WRAP_CONTENT, true);
 
-                explanation = popUpWindowLayout.findViewById(R.id.explanation);
-                title = popUpWindowLayout.findViewById(R.id.title);
+                if (popUpWindowLayout != null) {
+                    explanation = popUpWindowLayout.findViewById(R.id.explanation);
+                    title = popUpWindowLayout.findViewById(R.id.title);
+                    copyright = popUpWindowLayout.findViewById(R.id.copyright);
+                }
 
                 window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 window.setAnimationStyle(R.style.Animation);
-                //window.setElevation(50);
+
+                //set touch listener for window
+                window.setTouchInterceptor(new View.OnTouchListener() {
+
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        //view.performClick();
+                        window.dismiss();
+                        btn.setVisibility(View.VISIBLE);
+                        return false;
+                    }
+                });
 
                 window.showAtLocation(layout, Gravity.CENTER, 0, -25);
 
@@ -72,7 +92,10 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
                     //Fill MainActivity with photo & explanation & title & credits
                     explanation.setText(explanationText);
                     title.setText(titleText);
+                    copyright.setText(copyrightText);
                 }
+
+                btn.setVisibility(View.INVISIBLE);
             }
         });
     }
@@ -151,9 +174,13 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
         //Set leeched text to variables (used in showPopUpWindow method)
         explanationText = (CharSequence) results[1];
         titleText = (CharSequence) results[2];
+        copyrightText = (CharSequence) results[3];
 
         //make button visible
         btn.setVisibility(View.VISIBLE);
+
+        //make progress circle invisible
+        progressBar.setVisibility(View.INVISIBLE);
 
         //this is for future functions (change wallpaper with instant crop option)
         /*Intent intent = new Intent(WallpaperManager.ACTION_CROP_AND_SET_WALLPAPER);

@@ -16,14 +16,14 @@ import java.net.URL;
 public class GetDataAsyncTask extends AsyncTask<URL, Void, Object[]> {
 
     private static final String REQUEST_METHOD = "GET";
-    private static final int READ_TIMEOUT = 15000;
-    private static final int CONNECTION_TIMEOUT = 15000;
-    public AsyncResponse delegate = null;
+    private static final int READ_TIMEOUT = 30000;
+    private static final int CONNECTION_TIMEOUT = 30000;
+    AsyncResponse delegate = null;
 
     @Override
     protected Object[] doInBackground(URL... urls) {
 
-        Object[] results = new Object[3];
+        Object[] results = new Object[4];
         InputStreamReader streamReader;
 
         try {
@@ -49,12 +49,13 @@ public class GetDataAsyncTask extends AsyncTask<URL, Void, Object[]> {
 
             //Get InputStream (wallpaper image) from desired URL
             String[] stringsFromWallpaperCreator = wallpaperCreator.readJsonStream(streamReader);
-            InputStream inputStream = new URL(stringsFromWallpaperCreator[1]).openStream();
+            InputStream inputStream = new URL(stringsFromWallpaperCreator[2]).openStream();
 
             //Decode stream to Bitmap
             results[0] = BitmapFactory.decodeStream(inputStream); //image
-            results[1] = stringsFromWallpaperCreator[0]; //explanation
-            results[2] = stringsFromWallpaperCreator[2]; //title
+            results[1] = stringsFromWallpaperCreator[1]; //explanation
+            results[2] = stringsFromWallpaperCreator[3]; //title
+            results[3] = stringsFromWallpaperCreator[0]; //copyright
 
         } catch (IOException e) {
             e.printStackTrace();
