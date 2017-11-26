@@ -5,4 +5,7 @@
     <string name="toast_loaded_reloaded">Wallpaper loaded/reloaded!</string>
     <string name="loading">Loading…</string>
     <string name="details_button">Show photo explanation…</string>
+    <string name="alert_title">Warning!</string>
+    <string name="alert_message_no_internet">No internet connection available,\nso I can\'t download data from NASA!</string>
+    <string name="alert_message_no_data">No data from NASA this time, plz try again later…</string>
 </resources>
