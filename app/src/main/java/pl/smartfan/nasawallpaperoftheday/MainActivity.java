@@ -209,13 +209,12 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
             progressBar.setVisibility(View.INVISIBLE);
         } else { //if there is no results from AsyncTask - show alert dialog
             try {
-                Random r = new Random();
-                int randomMinusDays = r.nextInt(1000 - 1) + 1;
-                nasaLeech(randomMinusDays);
-                randomDatesCounter++;
-
-                //if randomizing dates doesn't work (tried 5 times), show Alert Dialog
-                if (randomDatesCounter > 5) {
+                if (randomDatesCounter < 6) {
+                    Random r = new Random();
+                    int randomMinusDays = r.nextInt(1000 - 1) + 1;
+                    nasaLeech(randomMinusDays);
+                    randomDatesCounter++;
+                } else { //if randomizing dates doesn't work (tried 5 times), show Alert Dialog
                     alertMe((String) getText(R.string.alert_message_no_data));
                 }
             } catch (MalformedURLException e) {
