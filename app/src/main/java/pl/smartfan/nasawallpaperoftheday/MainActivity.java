@@ -32,6 +32,10 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements AsyncResponse {
 
@@ -122,8 +126,8 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
 
     //method responsible for data leeching from NASA servers
     private void nasaLeech() throws MalformedURLException {
-        //URL to send to AsyncTask
-        URL url = new URL("https://api.nasa.gov/planetary/apod?api_key=GmIPSectIKdfHDCcnoFZpupFfex71nm9WODSejKu"); // TODO: 26.11.2017 tru to use "hd=True" parameter 
+        //URL to send to AsyncTask with custom date
+        URL url = new URL("https://api.nasa.gov/planetary/apod?date=" + getDateForUrl() + "&hd=True&api_key=GmIPSectIKdfHDCcnoFZpupFfex71nm9WODSejKu");
 
         //Instantiate new instance of GetDataAsyncTask class
         GetDataAsyncTask getRequest = new GetDataAsyncTask();
@@ -137,8 +141,7 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
     //method fired after AsyncTask finished
     @Override
     public void processFinish(Object[] results) {
-
-        if (results != null) {
+        if (results != null) { //if there is results
             //Set image as wallpaper
             WallpaperManager wpm = WallpaperManager.getInstance(this);
             try {
@@ -166,7 +169,6 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
 
             //Bitmap cropping
             if (srcBmp.getWidth() >= srcBmp.getHeight()) {
-
                 dstBmp = Bitmap.createBitmap(
                         srcBmp,
                         srcBmp.getWidth() / 2 - srcBmp.getHeight() / 2,
@@ -176,7 +178,6 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
                 );
 
             } else {
-
                 dstBmp = Bitmap.createBitmap(
                         srcBmp,
                         0,
@@ -245,5 +246,13 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager != null ? connectivityManager.getActiveNetworkInfo() : null;
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    //method responsible for receiving date in YYYY-MM-DD format
+    private String getDateForUrl() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, -49); //for test: minus 50 days from current date
+        DateFormat df = new SimpleDateFormat("yyy-MM-dd", Locale.getDefault());
+        return df.format(calendar.getTime());
     }
 }
