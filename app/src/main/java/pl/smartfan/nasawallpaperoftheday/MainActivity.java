@@ -36,6 +36,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements AsyncResponse {
 
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
     ConstraintLayout layout;
     ProgressBar progressBar;
     CharSequence explanationText, titleText, copyrightText;
+    Integer randomDatesCounter = 0;
 
     // TODO: 25.11.2017 change wallpaper everyday
     @Override
@@ -58,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
         //checking is there internet connection available
         if (isNetworkAvailable()) {
             try {
-                nasaLeech();
+                nasaLeech(0);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
@@ -125,9 +127,11 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
     }
 
     //method responsible for data leeching from NASA servers
-    private void nasaLeech() throws MalformedURLException {
+    private void nasaLeech(int minusDays) throws MalformedURLException {
+        //make progress circle visible
+        progressBar.setVisibility(View.VISIBLE);
         //URL to send to AsyncTask with custom date
-        URL url = new URL("https://api.nasa.gov/planetary/apod?date=" + getDateForUrl() + "&hd=True&api_key=GmIPSectIKdfHDCcnoFZpupFfex71nm9WODSejKu");
+        URL url = new URL("https://api.nasa.gov/planetary/apod?date=" + getDateForUrl(minusDays) + "&hd=True&api_key=GmIPSectIKdfHDCcnoFZpupFfex71nm9WODSejKu");
 
         //Instantiate new instance of GetDataAsyncTask class
         GetDataAsyncTask getRequest = new GetDataAsyncTask();
@@ -200,12 +204,24 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
 
             //make button visible
             btn.setVisibility(View.VISIBLE);
-        } else { //if there is no results from AsyncTask - show alert dialog
-            alertMe((String) getText(R.string.alert_message_no_data));
-        }
 
-        //make progress circle invisible
-        progressBar.setVisibility(View.INVISIBLE);
+            //make progress circle invisible
+            progressBar.setVisibility(View.INVISIBLE);
+        } else { //if there is no results from AsyncTask - show alert dialog
+            try {
+                Random r = new Random();
+                int randomMinusDays = r.nextInt(1000 - 1) + 1;
+                nasaLeech(randomMinusDays);
+                randomDatesCounter++;
+
+                //if randomizing dates doesn't work (tried 5 times), show Alert Dialog
+                if (randomDatesCounter > 5) {
+                    alertMe((String) getText(R.string.alert_message_no_data));
+                }
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+        }
 
         //this is for future functions (change wallpaper with instant crop option)
         /*Intent intent = new Intent(WallpaperManager.ACTION_CROP_AND_SET_WALLPAPER);
@@ -249,9 +265,9 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
     }
 
     //method responsible for receiving date in YYYY-MM-DD format
-    private String getDateForUrl() {
+    private String getDateForUrl(int minusDays) {
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH, -49); //for test: minus 50 days from current date
+        calendar.add(Calendar.DAY_OF_MONTH, -minusDays); //for test: minus 50 days from current date
         DateFormat df = new SimpleDateFormat("yyy-MM-dd", Locale.getDefault());
         return df.format(calendar.getTime());
     }
