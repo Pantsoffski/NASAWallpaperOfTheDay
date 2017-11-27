@@ -46,12 +46,15 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
     ProgressBar progressBar;
     CharSequence explanationText, titleText, copyrightText;
     Integer randomDatesCounter = 0;
+    Alarm alarm;
 
     // TODO: 25.11.2017 change wallpaper everyday
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        alarm = new Alarm();
 
         layout = findViewById(R.id.mainLayout);
         progressBar = findViewById(R.id.progressBar);
@@ -269,5 +272,11 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
         calendar.add(Calendar.DAY_OF_MONTH, -minusDays); //for test: minus 50 days from current date
         DateFormat df = new SimpleDateFormat("yyy-MM-dd", Locale.getDefault());
         return df.format(calendar.getTime());
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        alarm.setAlarm(this.getApplicationContext());
     }
 }
