@@ -1,9 +1,6 @@
 package pl.smartfan.nasawallpaperoftheday;
 
 import android.app.AlertDialog;
-import android.app.WallpaperManager;
-import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
@@ -11,8 +8,6 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
@@ -25,17 +20,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
-import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements AsyncResponse {
@@ -45,24 +34,29 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
     ConstraintLayout layout;
     ProgressBar progressBar;
     CharSequence explanationText, titleText, copyrightText;
-    Integer randomDatesCounter = 0;
     Alarm alarm;
+    Utils utils;
+    private Integer randomDatesCounter = 0;
 
-    // TODO: 25.11.2017 change wallpaper everyday
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         alarm = new Alarm();
+        utils = new Utils(this);
 
         layout = findViewById(R.id.mainLayout);
         progressBar = findViewById(R.id.progressBar);
         btn = findViewById(R.id.button);
 
         //checking is there internet connection available
-        if (isNetworkAvailable()) {
+        if (utils.isNetworkAvailable()) {
             try {
+                //make progress circle visible
+                progressBar.setVisibility(View.VISIBLE);
+
+                //get data and set it in this Activity
                 nasaLeech(0);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
@@ -130,18 +124,16 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
     }
 
     //method responsible for data leeching from NASA servers
-    private void nasaLeech(int minusDays) throws MalformedURLException {
-        //make progress circle visible
-        progressBar.setVisibility(View.VISIBLE);
+    void nasaLeech(int minusDays) throws MalformedURLException {
         //URL to send to AsyncTask with custom date
-        URL url = new URL("https://api.nasa.gov/planetary/apod?date=" + getDateForUrl(minusDays) + "&hd=True&api_key=GmIPSectIKdfHDCcnoFZpupFfex71nm9WODSejKu");
+        URL url = new URL("https://api.nasa.gov/planetary/apod?date=" + utils.getDateForUrl(minusDays) + "&hd=True&api_key=GmIPSectIKdfHDCcnoFZpupFfex71nm9WODSejKu");
 
         //Instantiate new instance of GetDataAsyncTask class
         GetDataAsyncTask getRequest = new GetDataAsyncTask();
 
         getRequest.delegate = this;
 
-        //Perform the doInBackground method, passing in our url
+        //Perform the doInBackground method, passing in url
         getRequest.execute(url);
     }
 
@@ -150,23 +142,10 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
     public void processFinish(Object[] results) {
         if (results != null) { //if there is results
             //Set image as wallpaper
-            WallpaperManager wpm = WallpaperManager.getInstance(this);
-            try {
-                wpm.setBitmap((Bitmap) results[0]);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            utils.setWallpaper((Bitmap) results[0]);
 
-            //Prepare text for widget (cut it)
-            String textForWidget = (String) results[1];
-            textForWidget = textForWidget.substring(0, 200) + "...";
-
-            //Start and fill widget with leeched text
-            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-            RemoteViews remoteViews = new RemoteViews(this.getPackageName(), R.layout.app_widget);
-            ComponentName thisWidget = new ComponentName(this, AppWidget.class);
-            remoteViews.setTextViewText(R.id.appWidgetText, textForWidget);
-            appWidgetManager.updateAppWidget(thisWidget, remoteViews);
+            //Fill widget with data
+            utils.setWidget((String) results[1]);
 
             //Show toast message that wallpaper was loaded or reloaded
             Toast.makeText(this, R.string.toast_loaded_reloaded, Toast.LENGTH_LONG).show();
@@ -240,7 +219,7 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
     }*/
 
     //method responsible for Alert Dialog
-    private void alertMe(String message) {
+    void alertMe(String message) {
         AlertDialog.Builder builder;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
@@ -256,22 +235,6 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
-    }
-
-    //method responsible for detecting internet availability
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager != null ? connectivityManager.getActiveNetworkInfo() : null;
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
-    //method responsible for receiving date in YYYY-MM-DD format
-    private String getDateForUrl(int minusDays) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH, -minusDays); //for test: minus 50 days from current date
-        DateFormat df = new SimpleDateFormat("yyy-MM-dd", Locale.getDefault());
-        return df.format(calendar.getTime());
     }
 
     @Override

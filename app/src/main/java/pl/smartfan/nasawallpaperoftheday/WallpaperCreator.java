@@ -10,31 +10,42 @@ import java.io.InputStreamReader;
  * Class {@link WallpaperCreator} is responsible for processing JSON object.
  */
 
-public class WallpaperCreator {
+class WallpaperCreator {
 
-    private String[] stringToReturn = new String[4];
-
-    public String[] readJsonStream(InputStreamReader streamReader) throws IOException {
+    String[] readJsonStream(InputStreamReader streamReader) throws IOException {
         JsonReader jsonReader = new JsonReader(streamReader);
+
+        String[] stringsToReturn = new String[]{"", "", "", "", ""};
 
         try {
             jsonReader.beginObject(); //consume the object's opening brace
             while (jsonReader.hasNext()) {
                 String fetchedData = jsonReader.nextName();
-                if (fetchedData.equals("copyright")) { // Check if desired data is available
-                    stringToReturn[0] = "Copyright:\n" + jsonReader.nextString();
-                    Log.v("Result:", stringToReturn[0]);
-                } else if (fetchedData.equals("explanation")) {
-                    stringToReturn[1] = jsonReader.nextString();
-                    Log.v("Result:", stringToReturn[1]);
-                } else if (fetchedData.equals("hdurl")) {
-                    stringToReturn[2] = jsonReader.nextString();
-                    Log.v("Result:", stringToReturn[2]);
-                } else if (fetchedData.equals("title")) {
-                    stringToReturn[3] = jsonReader.nextString();
-                    Log.v("Result:", stringToReturn[3]);
-                } else {
-                    jsonReader.skipValue(); // Skip values of other names
+                switch (fetchedData) {
+                    case "copyright":  // Check if desired data is available
+                        stringsToReturn[0] = "Copyright:\n" + jsonReader.nextString();
+                        Log.v("Result:", stringsToReturn[0]);
+                        break;
+                    case "explanation":
+                        stringsToReturn[1] = jsonReader.nextString();
+                        Log.v("Result:", stringsToReturn[1]);
+                        break;
+                    case "hdurl":
+                        stringsToReturn[2] = jsonReader.nextString();
+                        Log.v("Result:", stringsToReturn[2]);
+                        break;
+                    case "title":
+                        stringsToReturn[3] = jsonReader.nextString();
+                        Log.v("Result:", stringsToReturn[3]);
+                        break;
+                    case "date":  // TODO: 28.11.2017 add date to explanation
+                        stringsToReturn[4] = jsonReader.nextString();
+                        Log.v("Result:", stringsToReturn[4]);
+                        break;
+                    default:
+                        jsonReader.skipValue(); // Skip values of other names
+
+                        break;
                 }
             }
             jsonReader.endObject();
@@ -42,7 +53,7 @@ public class WallpaperCreator {
             e.printStackTrace();
         }
 
-        return stringToReturn;
+        return stringsToReturn;
     }
 
 }
