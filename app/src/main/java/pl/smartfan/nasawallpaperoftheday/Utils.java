@@ -4,6 +4,7 @@ import android.app.WallpaperManager;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -65,5 +66,26 @@ public class Utils {
                 = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager != null ? connectivityManager.getActiveNetworkInfo() : null;
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    class PreferencesSaveGet {
+        SharedPreferences preferences = context.getSharedPreferences("pl.smartfan.nasawallpaperoftheday", Context.MODE_PRIVATE);
+
+        //save last downloaded explanation, date, title and url
+        void savePreferences(String url, String explanation, String title, String copyright, String date) {
+            preferences.edit().putString("url", url).putString("explanation", explanation).putString("title", title).putString("copyright", copyright).putString("date", date).apply();
+        }
+
+        //get preferences
+        String[] getPreferences() {
+            String[] stringsToReturn = new String[]{
+                    preferences.getString("url", ""),
+                    preferences.getString("explanation", ""),
+                    preferences.getString("title", ""),
+                    preferences.getString("copyright", ""),
+                    preferences.getString("date", "")
+            };
+            return stringsToReturn;
+        }
     }
 }
