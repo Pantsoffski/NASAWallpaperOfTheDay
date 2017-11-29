@@ -30,6 +30,7 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements AsyncResponse {
 
+    URL url;
     TextView explanation, title, copyright, date;
     Button btnExplanation, btnReload;
     ImageView backgroundImage;
@@ -138,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
                 //get data and set it in this Activity
 
                 //URL to send to AsyncTask with custom date
-                URL url = new URL("https://api.nasa.gov/planetary/apod?date=" + utils.getDateForUrl(minusDays) + "&hd=True&api_key=GmIPSectIKdfHDCcnoFZpupFfex71nm9WODSejKu");
+                url = new URL("https://api.nasa.gov/planetary/apod?date=" + utils.getDateForUrl(minusDays) + "&hd=True&api_key=GmIPSectIKdfHDCcnoFZpupFfex71nm9WODSejKu");
 
                 //Instantiate new instance of GetDataAsyncTask class
                 GetDataAsyncTask getRequest = new GetDataAsyncTask();
@@ -208,6 +209,12 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
 
             //make progress circle invisible
             progressBar.setVisibility(View.INVISIBLE);
+
+            //class PreferencesSaveGet needs an enclosing instance to be instantiated
+            Utils.PreferencesSaveGet prefs = new Utils(null).new PreferencesSaveGet();
+            //save url to prefs
+            prefs.savePreferences(url.toString());
+
         } else { //if there is no results from AsyncTask - show alert dialog
             if (randomDatesCounter < 6) {
                 Random r = new Random();

@@ -54,6 +54,11 @@ public class Alarm extends BroadcastReceiver implements AsyncResponse {
             int randomMinusDays = r.nextInt(1000 - 1) + 1;//to remove
             //change randomMinusDays to minusDays after removal
             url = new URL("https://api.nasa.gov/planetary/apod?date=" + utils.getDateForUrl(randomMinusDays) + "&hd=True&api_key=GmIPSectIKdfHDCcnoFZpupFfex71nm9WODSejKu");
+
+            //class PreferencesSaveGet needs an enclosing instance to be instantiated
+            Utils.PreferencesSaveGet prefs = new Utils(null).new PreferencesSaveGet();
+            //save url to prefs
+            prefs.savePreferences(url.toString());
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -74,7 +79,7 @@ public class Alarm extends BroadcastReceiver implements AsyncResponse {
         Intent i = new Intent(context, Alarm.class);
         PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, 0);
         if (am != null) {
-            am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000L * 60 * 60 * 2, pi); // Millis * Second * Minutes * Hours
+            am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000L * 60 /* 60 * 5*/, pi); // Millis * Second * Minutes * Hours
         }
     }
 

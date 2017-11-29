@@ -20,7 +20,7 @@ import java.util.Locale;
  * Class with tools to set and verify some things.
  */
 
-public class Utils {
+class Utils {
 
     private Context context;
 
@@ -51,6 +51,11 @@ public class Utils {
             }
         }
     }
+    // TODO: 29.11.2017 get bitmap from drawable 
+    /*Bitmap getWallpaper() {
+        WallpaperManager wpm = WallpaperManager.getInstance(context);
+        Bitmap currentWallpaper = BitmapFactory.decodeResource(context.getResources(), wpm.getDrawable());
+    }*/
 
     //method responsible for receiving date in YYYY-MM-DD format
     String getDateForUrl(int minusDays) {
@@ -72,20 +77,14 @@ public class Utils {
         SharedPreferences preferences = context.getSharedPreferences("pl.smartfan.nasawallpaperoftheday", Context.MODE_PRIVATE);
 
         //save last downloaded explanation, date, title and url
-        void savePreferences(String url, String explanation, String title, String copyright, String date) {
-            preferences.edit().putString("url", url).putString("explanation", explanation).putString("title", title).putString("copyright", copyright).putString("date", date).apply();
+        void savePreferences(String url) {
+            preferences.edit().putString("url", url).apply();
         }
 
         //get preferences
-        String[] getPreferences() {
-            String[] stringsToReturn = new String[]{
-                    preferences.getString("url", ""),
-                    preferences.getString("explanation", ""),
-                    preferences.getString("title", ""),
-                    preferences.getString("copyright", ""),
-                    preferences.getString("date", "")
-            };
-            return stringsToReturn;
+        String getPreferences() {
+            //get latest saved url to compare
+            return preferences.getString("url", "");
         }
     }
 }
