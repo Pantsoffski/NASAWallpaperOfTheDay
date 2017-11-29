@@ -23,7 +23,7 @@ public class GetDataAsyncTask extends AsyncTask<URL, Void, Object[]> {
     @Override
     protected Object[] doInBackground(URL... urls) {
 
-        Object[] results = new Object[4];
+        Object[] results = new Object[5];
         InputStreamReader streamReader;
 
         try {
@@ -56,6 +56,7 @@ public class GetDataAsyncTask extends AsyncTask<URL, Void, Object[]> {
             results[1] = stringsFromWallpaperCreator[1]; //explanation
             results[2] = stringsFromWallpaperCreator[3]; //title
             results[3] = stringsFromWallpaperCreator[0]; //copyright
+            results[4] = stringsFromWallpaperCreator[4]; //date
 
         } catch (IOException e) {
             e.printStackTrace();

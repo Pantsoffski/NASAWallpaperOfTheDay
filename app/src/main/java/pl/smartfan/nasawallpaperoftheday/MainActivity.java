@@ -18,6 +18,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -29,11 +30,12 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements AsyncResponse {
 
-    TextView explanation, title, copyright;
-    Button btn;
+    TextView explanation, title, copyright, date;
+    Button btnExplanation, btnReload;
+    ImageView backgroundImage;
     ConstraintLayout layout;
     ProgressBar progressBar;
-    CharSequence explanationText, titleText, copyrightText;
+    CharSequence explanationText, titleText, copyrightText, dateText;
     Alarm alarm;
     Utils utils;
     private Integer randomDatesCounter = 0;
@@ -48,28 +50,16 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
 
         layout = findViewById(R.id.mainLayout);
         progressBar = findViewById(R.id.progressBar);
-        btn = findViewById(R.id.button);
+        btnExplanation = findViewById(R.id.button_explanation);
+        btnReload = findViewById(R.id.button_refresh);
+        backgroundImage = findViewById(R.id.backgroundImage);
 
-        //checking is there internet connection available
-        if (utils.isNetworkAvailable()) {
-            try {
-                //make progress circle visible
-                progressBar.setVisibility(View.VISIBLE);
-
-                //get data and set it in this Activity
-                nasaLeech(0);
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-        } else {
-            alertMe((String) getText(R.string.alert_message_no_internet));
-        }
-
-        //set onClickListener on button
-        btn.setOnClickListener(new View.OnClickListener() {
+        //set onClickListener on btnExplanation
+        btnExplanation.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(final View view) {
+                btnReload.setVisibility(View.INVISIBLE);
                 //Show popup window with explanation, title and credits when button is clicked
                 LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 View popUpWindowLayout = null;
@@ -82,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
                     explanation = popUpWindowLayout.findViewById(R.id.explanation);
                     title = popUpWindowLayout.findViewById(R.id.title);
                     copyright = popUpWindowLayout.findViewById(R.id.copyright);
+                    date = popUpWindowLayout.findViewById(R.id.date);
                 }
 
                 window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -95,7 +86,8 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
                         switch (event.getAction()) {
                             case MotionEvent.ACTION_DOWN:
                                 window.dismiss();
-                                btn.setVisibility(View.VISIBLE);
+                                btnExplanation.setVisibility(View.VISIBLE);
+                                btnReload.setVisibility(View.VISIBLE);
                                 break;
                             case MotionEvent.ACTION_UP:
                                 v.performClick();
@@ -116,25 +108,51 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
                     explanation.setText(explanationText);
                     title.setText(titleText);
                     copyright.setText(copyrightText);
+                    date.setText(dateText);
                 }
 
-                btn.setVisibility(View.INVISIBLE);
+                btnExplanation.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        //set onClickListener on btnReload
+        btnReload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                nasaLeech(0);
             }
         });
     }
 
     //method responsible for data leeching from NASA servers
-    void nasaLeech(int minusDays) throws MalformedURLException {
-        //URL to send to AsyncTask with custom date
-        URL url = new URL("https://api.nasa.gov/planetary/apod?date=" + utils.getDateForUrl(minusDays) + "&hd=True&api_key=GmIPSectIKdfHDCcnoFZpupFfex71nm9WODSejKu");
+    void nasaLeech(int minusDays) {
+        //checking is there internet connection available
+        if (utils.isNetworkAvailable()) {
+            try {
+                //hide background image
+                backgroundImage.setVisibility(View.INVISIBLE);
 
-        //Instantiate new instance of GetDataAsyncTask class
-        GetDataAsyncTask getRequest = new GetDataAsyncTask();
+                //make progress circle visible
+                progressBar.setVisibility(View.VISIBLE);
 
-        getRequest.delegate = this;
+                //get data and set it in this Activity
 
-        //Perform the doInBackground method, passing in url
-        getRequest.execute(url);
+                //URL to send to AsyncTask with custom date
+                URL url = new URL("https://api.nasa.gov/planetary/apod?date=" + utils.getDateForUrl(minusDays) + "&hd=True&api_key=GmIPSectIKdfHDCcnoFZpupFfex71nm9WODSejKu");
+
+                //Instantiate new instance of GetDataAsyncTask class
+                GetDataAsyncTask getRequest = new GetDataAsyncTask();
+
+                getRequest.delegate = this;
+
+                //Perform the doInBackground method, passing in url
+                getRequest.execute(url);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+        } else {
+            alertMe((String) getText(R.string.alert_message_no_internet));
+        }
     }
 
     //method fired after AsyncTask finished
@@ -183,24 +201,21 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
             explanationText = (CharSequence) results[1];
             titleText = (CharSequence) results[2];
             copyrightText = (CharSequence) results[3];
+            dateText = (CharSequence) results[4];
 
             //make button visible
-            btn.setVisibility(View.VISIBLE);
+            btnExplanation.setVisibility(View.VISIBLE);
 
             //make progress circle invisible
             progressBar.setVisibility(View.INVISIBLE);
         } else { //if there is no results from AsyncTask - show alert dialog
-            try {
-                if (randomDatesCounter < 6) {
-                    Random r = new Random();
-                    int randomMinusDays = r.nextInt(1000 - 1) + 1;
-                    nasaLeech(randomMinusDays);
-                    randomDatesCounter++;
-                } else { //if randomizing dates doesn't work (tried 5 times), show Alert Dialog
-                    alertMe((String) getText(R.string.alert_message_no_data));
-                }
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
+            if (randomDatesCounter < 6) {
+                Random r = new Random();
+                int randomMinusDays = r.nextInt(1000 - 1) + 1;
+                nasaLeech(randomMinusDays);
+                randomDatesCounter++;
+            } else { //if randomizing dates doesn't work (tried 5 times), show Alert Dialog
+                alertMe((String) getText(R.string.alert_message_no_data));
             }
         }
 

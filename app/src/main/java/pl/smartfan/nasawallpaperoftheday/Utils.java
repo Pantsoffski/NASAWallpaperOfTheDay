@@ -19,7 +19,7 @@ import java.util.Locale;
  * Class with tools to set and verify some things.
  */
 
-public class Utils implements AsyncResponse {
+public class Utils {
 
     private Context context;
 
@@ -65,10 +65,5 @@ public class Utils implements AsyncResponse {
                 = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager != null ? connectivityManager.getActiveNetworkInfo() : null;
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
-    @Override
-    public void processFinish(Object[] results) {
-
     }
 }
