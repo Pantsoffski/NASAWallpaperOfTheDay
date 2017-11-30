@@ -38,7 +38,7 @@ class WallpaperCreator {
                         stringsToReturn[3] = jsonReader.nextString();
                         Log.v("Result:", stringsToReturn[3]);
                         break;
-                    case "date":  // TODO: 28.11.2017 add date to explanation
+                    case "date":
                         stringsToReturn[4] = "Date: " + jsonReader.nextString();
                         Log.v("Result:", stringsToReturn[4]);
                         break;

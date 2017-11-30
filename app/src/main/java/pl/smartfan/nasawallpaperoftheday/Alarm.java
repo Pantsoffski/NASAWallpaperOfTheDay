@@ -22,13 +22,17 @@ public class Alarm extends BroadcastReceiver implements AsyncResponse {
     Context context;
     Intent intent;
     Utils utils;
+    //class PreferencesSaveGet needs an enclosing instance to be instantiated
+    Utils.PreferencesSaveGet prefs;
     private Integer randomDatesCounter = 0;
+    private URL url;
 
     @Override
     public void onReceive(Context context, Intent intent) {
         this.context = context;
         this.intent = intent;
         utils = new Utils(context);
+        prefs = new Utils(context).new PreferencesSaveGet();
 
         PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wl = null;
@@ -48,23 +52,16 @@ public class Alarm extends BroadcastReceiver implements AsyncResponse {
 
     private void nasaLeech(int minusDays) {
         //URL to send to AsyncTask with custom date
-        URL url = null;
+        url = null;
         try {
-            Random r = new Random();//to remove
-            int randomMinusDays = r.nextInt(1000 - 1) + 1;//to remove
             //change randomMinusDays to minusDays after removal
-            url = new URL("https://api.nasa.gov/planetary/apod?date=" + utils.getDateForUrl(randomMinusDays) + "&hd=True&api_key=GmIPSectIKdfHDCcnoFZpupFfex71nm9WODSejKu");
-
-            //class PreferencesSaveGet needs an enclosing instance to be instantiated
-            Utils.PreferencesSaveGet prefs = new Utils(null).new PreferencesSaveGet();
-            //save url to prefs
-            prefs.savePreferences(url.toString());
+            url = new URL("https://api.nasa.gov/planetary/apod?date=" + utils.getDateForUrl(minusDays) + "&hd=True&api_key=GmIPSectIKdfHDCcnoFZpupFfex71nm9WODSejKu");
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
 
         //Instantiate new instance of GetDataAsyncTask class
-        GetDataAsyncTask getRequest = new GetDataAsyncTask();
+        GetDataAsyncTask getRequest = new GetDataAsyncTask(prefs, utils.getWallpaper());
 
         getRequest.delegate = this;
 
@@ -79,7 +76,7 @@ public class Alarm extends BroadcastReceiver implements AsyncResponse {
         Intent i = new Intent(context, Alarm.class);
         PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, 0);
         if (am != null) {
-            am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000L * 60 /* 60 * 5*/, pi); // Millis * Second * Minutes * Hours
+            am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000L * 60 * 60 * 12, pi); // Millis * Second * Minutes * Hours
         }
     }
 
@@ -91,6 +88,9 @@ public class Alarm extends BroadcastReceiver implements AsyncResponse {
 
             //Fill widget with data
             utils.setWidget((String) results[1]);
+
+            //save url to prefs
+            prefs.savePreferences(url.toString(), (String) results[1], (String) results[2], (String) results[3], (String) results[4]);
 
             //Show toast
             Toast.makeText(context, R.string.toast_loaded_reloaded, Toast.LENGTH_LONG).show();

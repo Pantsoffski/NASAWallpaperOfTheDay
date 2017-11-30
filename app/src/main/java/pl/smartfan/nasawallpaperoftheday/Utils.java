@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.widget.RemoteViews;
@@ -41,6 +42,12 @@ class Utils {
         appWidgetManager.updateAppWidget(thisWidget, remoteViews);
     }
 
+    Bitmap getWallpaper() {
+        WallpaperManager wpm = WallpaperManager.getInstance(context);
+        BitmapDrawable bitmapDrawable = (BitmapDrawable) wpm.peekDrawable();
+        return bitmapDrawable.getBitmap();
+    }
+
     void setWallpaper(Bitmap bitmap) {
         if (bitmap != null) { //if there is results
             WallpaperManager wpm = WallpaperManager.getInstance(context);
@@ -51,11 +58,6 @@ class Utils {
             }
         }
     }
-    // TODO: 29.11.2017 get bitmap from drawable 
-    /*Bitmap getWallpaper() {
-        WallpaperManager wpm = WallpaperManager.getInstance(context);
-        Bitmap currentWallpaper = BitmapFactory.decodeResource(context.getResources(), wpm.getDrawable());
-    }*/
 
     //method responsible for receiving date in YYYY-MM-DD format
     String getDateForUrl(int minusDays) {
@@ -73,18 +75,24 @@ class Utils {
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
+    //inner class responsible for preferences
     class PreferencesSaveGet {
-        SharedPreferences preferences = context.getSharedPreferences("pl.smartfan.nasawallpaperoftheday", Context.MODE_PRIVATE);
+        private SharedPreferences prefs = context.getSharedPreferences("pl.smartfan.nasawallpaperoftheday", Context.MODE_PRIVATE);
 
-        //save last downloaded explanation, date, title and url
-        void savePreferences(String url) {
-            preferences.edit().putString("url", url).apply();
+        //save last downloaded url, explanation, title, copyright and date
+        void savePreferences(String url, String explanation, String title, String copyright, String date) {
+            prefs.edit().putString("url", url).putString("explanation", explanation).putString("title", title).putString("copyright", copyright).putString("date", date).apply();
         }
 
         //get preferences
-        String getPreferences() {
-            //get latest saved url to compare
-            return preferences.getString("url", "");
+        String[] getPreferences() {
+            //get latest saved url, explanation, title, copyright and date
+            return new String[]{
+                    prefs.getString("url", "https://api.nasa.gov/"),
+                    prefs.getString("explanation", ""),
+                    prefs.getString("title", ""),
+                    prefs.getString("copyright", ""),
+                    prefs.getString("date", "")};
         }
     }
 }

@@ -28,6 +28,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Random;
 
+// TODO: 30.11.2017 add icons, comments 
 public class MainActivity extends AppCompatActivity implements AsyncResponse {
 
     URL url;
@@ -39,6 +40,8 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
     CharSequence explanationText, titleText, copyrightText, dateText;
     Alarm alarm;
     Utils utils;
+    //class PreferencesSaveGet needs an enclosing instance to be instantiated
+    Utils.PreferencesSaveGet prefs;
     private Integer randomDatesCounter = 0;
 
     @Override
@@ -48,12 +51,15 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
 
         alarm = new Alarm();
         utils = new Utils(this);
+        prefs = new Utils(this).new PreferencesSaveGet();
 
         layout = findViewById(R.id.mainLayout);
         progressBar = findViewById(R.id.progressBar);
         btnExplanation = findViewById(R.id.button_explanation);
         btnReload = findViewById(R.id.button_refresh);
         backgroundImage = findViewById(R.id.backgroundImage);
+
+        nasaLeech(0);
 
         //set onClickListener on btnExplanation
         btnExplanation.setOnClickListener(new View.OnClickListener() {
@@ -142,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
                 url = new URL("https://api.nasa.gov/planetary/apod?date=" + utils.getDateForUrl(minusDays) + "&hd=True&api_key=GmIPSectIKdfHDCcnoFZpupFfex71nm9WODSejKu");
 
                 //Instantiate new instance of GetDataAsyncTask class
-                GetDataAsyncTask getRequest = new GetDataAsyncTask();
+                GetDataAsyncTask getRequest = new GetDataAsyncTask(prefs, utils.getWallpaper());
 
                 getRequest.delegate = this;
 
@@ -210,10 +216,8 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
             //make progress circle invisible
             progressBar.setVisibility(View.INVISIBLE);
 
-            //class PreferencesSaveGet needs an enclosing instance to be instantiated
-            Utils.PreferencesSaveGet prefs = new Utils(null).new PreferencesSaveGet();
             //save url to prefs
-            prefs.savePreferences(url.toString());
+            prefs.savePreferences(url.toString(), (String) results[1], (String) results[2], (String) results[3], (String) results[4]);
 
         } else { //if there is no results from AsyncTask - show alert dialog
             if (randomDatesCounter < 6) {
