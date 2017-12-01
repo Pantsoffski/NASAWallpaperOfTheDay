@@ -1,4 +1,4 @@
-package pl.smartfan.nasawallpaperoftheday;
+package pl.smartfan.spacewallz;
 
 /**
  * Interface {@link AsyncResponse} is responsible for handling response from AsyncTask.

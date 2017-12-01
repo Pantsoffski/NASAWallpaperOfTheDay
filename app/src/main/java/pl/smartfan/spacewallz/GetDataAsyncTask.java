@@ -1,4 +1,4 @@
-package pl.smartfan.nasawallpaperoftheday;
+package pl.smartfan.spacewallz;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

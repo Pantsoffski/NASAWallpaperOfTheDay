@@ -1,4 +1,4 @@
-package pl.smartfan.nasawallpaperoftheday;
+package pl.smartfan.spacewallz;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
@@ -32,6 +33,7 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity implements AsyncResponse {
 
     URL url;
+    WebView imageWebView;
     TextView explanation, title, copyright, date;
     Button btnExplanation, btnReload;
     ImageView backgroundImage;
@@ -58,6 +60,8 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
         btnExplanation = findViewById(R.id.button_explanation);
         btnReload = findViewById(R.id.button_refresh);
         backgroundImage = findViewById(R.id.backgroundImage);
+        //imageWebView = findViewById(R.id.imageWebView);
+        //nasaPhoto = findViewById(R.id.imageView);
 
         nasaLeech(0);
 
@@ -166,6 +170,16 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
     @Override
     public void processFinish(Object[] results) {
         if (results != null) { //if there is results
+            /*//Set bitmap to WebView
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            Bitmap bitmapper = (Bitmap) results[0];
+            bitmapper.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+            byte[] byteArray = byteArrayOutputStream.toByteArray();
+            String imageBase64 = Base64.encodeToString(byteArray, Base64.DEFAULT);
+            String dataURL = "data:image/png;base64," + imageBase64;
+
+            imageWebView.loadUrl(dataURL); //pass the bitmap base64 data url in URL parameter*/
+
             //Set image as wallpaper
             utils.setWallpaper((Bitmap) results[0]);
 
@@ -218,7 +232,6 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
 
             //save url to prefs
             prefs.savePreferences(url.toString(), (String) results[1], (String) results[2], (String) results[3], (String) results[4]);
-
         } else { //if there is no results from AsyncTask - show alert dialog
             if (randomDatesCounter < 6) {
                 Random r = new Random();

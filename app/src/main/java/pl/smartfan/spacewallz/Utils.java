@@ -1,4 +1,4 @@
-package pl.smartfan.nasawallpaperoftheday;
+package pl.smartfan.spacewallz;
 
 import android.app.WallpaperManager;
 import android.appwidget.AppWidgetManager;
@@ -77,7 +77,7 @@ class Utils {
 
     //inner class responsible for preferences
     class PreferencesSaveGet {
-        private SharedPreferences prefs = context.getSharedPreferences("pl.smartfan.nasawallpaperoftheday", Context.MODE_PRIVATE);
+        private SharedPreferences prefs = context.getSharedPreferences("pl.smartfan.spacewallz", Context.MODE_PRIVATE);
 
         //save last downloaded url, explanation, title, copyright and date
         void savePreferences(String url, String explanation, String title, String copyright, String date) {

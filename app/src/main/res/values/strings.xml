@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">NASA Wallpaper Of The Day</string>
-    <string name="appwidget_text">NASA Wallpaper Of The Day - no content to display</string>
+    <string name="app_name">SpaceWallz</string>
+    <string name="appwidget_text">SpaceWallz - no content to display</string>
     <string name="add_widget">Add widget</string>
     <string name="toast_loaded_reloaded">Wallpaper loaded/reloaded!</string>
     <string name="loading">Loading…</string>

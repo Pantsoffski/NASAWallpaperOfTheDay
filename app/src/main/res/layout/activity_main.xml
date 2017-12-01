@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="20dp"
-    tools:context="pl.smartfan.nasawallpaperoftheday.MainActivity">
+    tools:context="pl.smartfan.spacewallz.MainActivity">
 
     <Button
         android:id="@+id/button_explanation"
