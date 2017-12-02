@@ -17,13 +17,13 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.github.chrisbanes.photoview.PhotoView;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -33,10 +33,10 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity implements AsyncResponse {
 
     URL url;
-    WebView imageWebView;
+    Bitmap srcBmp;
+    PhotoView photoView;
     TextView explanation, title, copyright, date;
-    Button btnExplanation, btnReload;
-    ImageView backgroundImage;
+    Button btnExplanation, btnReload, btnFullscreen;
     ConstraintLayout layout;
     ProgressBar progressBar;
     CharSequence explanationText, titleText, copyrightText, dateText;
@@ -59,15 +59,24 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
         progressBar = findViewById(R.id.progressBar);
         btnExplanation = findViewById(R.id.button_explanation);
         btnReload = findViewById(R.id.button_refresh);
-        backgroundImage = findViewById(R.id.backgroundImage);
-        //imageWebView = findViewById(R.id.imageWebView);
-        //nasaPhoto = findViewById(R.id.imageView);
+        btnFullscreen = findViewById(R.id.buttonFullscreen);
+        photoView = findViewById(R.id.photoView);
+
+        btnFullscreen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                photoView.setVisibility(View.VISIBLE);
+                if (srcBmp != null) {
+                    Drawable drawable = new BitmapDrawable(getResources(), srcBmp);
+                    photoView.setImageDrawable(drawable);
+                }
+            }
+        });
 
         nasaLeech(0);
 
         //set onClickListener on btnExplanation
         btnExplanation.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(final View view) {
                 btnReload.setVisibility(View.INVISIBLE);
@@ -140,9 +149,6 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
         //checking is there internet connection available
         if (utils.isNetworkAvailable()) {
             try {
-                //hide background image
-                backgroundImage.setVisibility(View.INVISIBLE);
-
                 //make progress circle visible
                 progressBar.setVisibility(View.VISIBLE);
 
@@ -170,15 +176,6 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
     @Override
     public void processFinish(Object[] results) {
         if (results != null) { //if there is results
-            /*//Set bitmap to WebView
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            Bitmap bitmapper = (Bitmap) results[0];
-            bitmapper.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-            byte[] byteArray = byteArrayOutputStream.toByteArray();
-            String imageBase64 = Base64.encodeToString(byteArray, Base64.DEFAULT);
-            String dataURL = "data:image/png;base64," + imageBase64;
-
-            imageWebView.loadUrl(dataURL); //pass the bitmap base64 data url in URL parameter*/
 
             //Set image as wallpaper
             utils.setWallpaper((Bitmap) results[0]);
@@ -189,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
             //Show toast message that wallpaper was loaded or reloaded
             Toast.makeText(this, R.string.toast_loaded_reloaded, Toast.LENGTH_LONG).show();
 
-            Bitmap srcBmp = (Bitmap) results[0];
+            srcBmp = (Bitmap) results[0];
             Bitmap dstBmp;
 
             //Bitmap cropping

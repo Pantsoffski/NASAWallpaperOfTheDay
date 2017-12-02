@@ -32,6 +32,7 @@
                 android:resource="@xml/app_widget_info" />
         </receiver>
         <receiver android:name=".Alarm" />
+
     </application>
 
 </manifest>

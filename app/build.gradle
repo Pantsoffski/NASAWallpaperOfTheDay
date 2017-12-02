@@ -27,4 +27,11 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    compile 'com.github.chrisbanes:PhotoView:2.1.3' //PhotoView aims to help produce an easily usable implementation of a zooming Android ImageView.
+}
+
+allprojects { //PhotoView
+    repositories {
+        maven { url "https://jitpack.io" }
+    }
 }
