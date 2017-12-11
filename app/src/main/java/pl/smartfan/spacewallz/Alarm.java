@@ -11,7 +11,6 @@ import android.widget.Toast;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Random;
 
 /**
  * Class {@link Alarm} is responsible for periodically running up wallpaper changing task.
@@ -95,10 +94,8 @@ public class Alarm extends BroadcastReceiver implements AsyncResponse {
             //Show toast
             Toast.makeText(context, R.string.toast_loaded_reloaded, Toast.LENGTH_LONG).show();
         } else { //if there is no results from AsyncTask - get nasa JSON from randomized date
-            if (randomDatesCounter < 6) {
-                Random r = new Random();
-                int randomMinusDays = r.nextInt(1000 - 1) + 1;
-                nasaLeech(randomMinusDays);
+            if (randomDatesCounter < 10) {
+                nasaLeech(randomDatesCounter - 1); // get latest working date
                 randomDatesCounter++;
             } else {
                 //Show toast
