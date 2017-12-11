@@ -247,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
                 //Random r = new Random();
                 //int randomMinusDays = r.nextInt(1000 - 1) + 1;
 
-                nasaLeech(randomDatesCounter - 1); // get latest working date
+                nasaLeech(randomDatesCounter + 1); // get latest working date
                 randomDatesCounter++;
             } else { //if randomizing dates doesn't work (tried 5 times), show Alert Dialog
                 alertMe((String) getText(R.string.alert_message_no_data));
