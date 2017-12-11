@@ -9,4 +9,5 @@
     <string name="alert_title">Warning!</string>
     <string name="alert_message_no_internet">No internet connection available,\nso I can\'t download data from NASA!</string>
     <string name="alert_message_no_data">No data from NASA this time, plz try again later…</string>
+    <string name="x_button">x</string>
 </resources>

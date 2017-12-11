@@ -14,7 +14,6 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -36,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
     Bitmap srcBmp;
     PhotoView photoView;
     TextView explanation, title, copyright, date;
-    Button btnExplanation, btnReload, btnFullscreen;
+    Button btnExplanation, btnReload, btnFullscreen, xButtonWindow;
     ConstraintLayout layout;
     ProgressBar progressBar;
     CharSequence explanationText, titleText, copyrightText, dateText;
@@ -65,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
         btnFullscreen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
+                btnFullscreen.setVisibility(View.INVISIBLE);
                 photoView.setVisibility(View.VISIBLE);
                 if (srcBmp != null) {
                     Drawable drawable = new BitmapDrawable(getResources(), srcBmp);
@@ -80,6 +80,9 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
             @Override
             public void onClick(final View view) {
                 btnReload.setVisibility(View.INVISIBLE);
+                btnExplanation.setVisibility(View.INVISIBLE);
+                btnFullscreen.setVisibility(View.INVISIBLE);
+
                 //Show popup window with explanation, title and credits when button is clicked
                 LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 View popUpWindowLayout = null;
@@ -93,30 +96,20 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
                     title = popUpWindowLayout.findViewById(R.id.title);
                     copyright = popUpWindowLayout.findViewById(R.id.copyright);
                     date = popUpWindowLayout.findViewById(R.id.date);
+                    xButtonWindow = popUpWindowLayout.findViewById(R.id.xButtonWindow);
                 }
 
                 window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 window.setAnimationStyle(R.style.Animation);
 
-                //set touch listener for window
-                window.setTouchInterceptor(new View.OnTouchListener() {
-
+                //set onClickListener for popup window X button
+                xButtonWindow.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        switch (event.getAction()) {
-                            case MotionEvent.ACTION_DOWN:
-                                window.dismiss();
-                                btnExplanation.setVisibility(View.VISIBLE);
-                                btnReload.setVisibility(View.VISIBLE);
-                                break;
-                            case MotionEvent.ACTION_UP:
-                                v.performClick();
-                                break;
-                            default:
-                                break;
-                        }
-
-                        return true;
+                    public void onClick(View v) {
+                        window.dismiss();
+                        btnExplanation.setVisibility(View.VISIBLE);
+                        btnReload.setVisibility(View.VISIBLE);
+                        btnFullscreen.setVisibility(View.VISIBLE);
                     }
                 });
 
@@ -130,8 +123,6 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
                     copyright.setText(copyrightText);
                     date.setText(dateText);
                 }
-
-                btnExplanation.setVisibility(View.INVISIBLE);
             }
         });
 
