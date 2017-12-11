@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -26,7 +27,6 @@ import com.github.chrisbanes.photoview.PhotoView;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Random;
 
 // TODO: 30.11.2017 add icons, comments 
 public class MainActivity extends AppCompatActivity implements AsyncResponse {
@@ -35,7 +35,8 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
     Bitmap srcBmp;
     PhotoView photoView;
     TextView explanation, title, copyright, date;
-    Button btnExplanation, btnReload, btnFullscreen, xButtonWindow;
+    Button btnExplanation, btnReload, xButtonWindow, xButtonFullscreen;
+    ImageButton btnFullscreen;
     ConstraintLayout layout;
     ProgressBar progressBar;
     CharSequence explanationText, titleText, copyrightText, dateText;
@@ -58,14 +59,22 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
         progressBar = findViewById(R.id.progressBar);
         btnExplanation = findViewById(R.id.button_explanation);
         btnReload = findViewById(R.id.button_refresh);
-        btnFullscreen = findViewById(R.id.buttonFullscreen);
+        btnFullscreen = findViewById(R.id.button_fullscreen);
+        xButtonFullscreen = findViewById(R.id.x_button_fullscreen);
         photoView = findViewById(R.id.photoView);
 
+        nasaLeech(0);
+
+        //set onClickListener on btnFullscreen
         btnFullscreen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
                 btnFullscreen.setVisibility(View.INVISIBLE);
+                btnExplanation.setVisibility(View.INVISIBLE);
+                btnReload.setVisibility(View.INVISIBLE);
+
                 photoView.setVisibility(View.VISIBLE);
+                xButtonFullscreen.setVisibility(View.VISIBLE);
                 if (srcBmp != null) {
                     Drawable drawable = new BitmapDrawable(getResources(), srcBmp);
                     photoView.setImageDrawable(drawable);
@@ -73,7 +82,18 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
             }
         });
 
-        nasaLeech(0);
+        //set onClickListener on xButtonFullscreen
+        xButtonFullscreen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btnFullscreen.setVisibility(View.VISIBLE);
+                btnExplanation.setVisibility(View.VISIBLE);
+                btnReload.setVisibility(View.VISIBLE);
+
+                photoView.setVisibility(View.INVISIBLE);
+                xButtonFullscreen.setVisibility(View.INVISIBLE);
+            }
+        });
 
         //set onClickListener on btnExplanation
         btnExplanation.setOnClickListener(new View.OnClickListener() {
@@ -212,8 +232,9 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
             copyrightText = (CharSequence) results[3];
             dateText = (CharSequence) results[4];
 
-            //make button visible
+            //make buttons visible
             btnExplanation.setVisibility(View.VISIBLE);
+            btnFullscreen.setVisibility(View.VISIBLE);
 
             //make progress circle invisible
             progressBar.setVisibility(View.INVISIBLE);
@@ -221,29 +242,18 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
             //save url to prefs
             prefs.savePreferences(url.toString(), (String) results[1], (String) results[2], (String) results[3], (String) results[4]);
         } else { //if there is no results from AsyncTask - show alert dialog
-            if (randomDatesCounter < 6) {
-                Random r = new Random();
-                int randomMinusDays = r.nextInt(1000 - 1) + 1;
-                nasaLeech(randomMinusDays);
+            if (randomDatesCounter < 10) {
+                //for future random date getter
+                //Random r = new Random();
+                //int randomMinusDays = r.nextInt(1000 - 1) + 1;
+
+                nasaLeech(randomDatesCounter + 1); // get latest working date
                 randomDatesCounter++;
             } else { //if randomizing dates doesn't work (tried 5 times), show Alert Dialog
                 alertMe((String) getText(R.string.alert_message_no_data));
             }
         }
-
-        //this is for future functions (change wallpaper with instant crop option)
-        /*Intent intent = new Intent(WallpaperManager.ACTION_CROP_AND_SET_WALLPAPER);
-        Uri myImageUro = Uri.
-        wpm.getCropAndSetWallpaperIntent(getImageUri(this, nasaLeeched));*/
     }
-
-    //this is for future functions (change wallpaper with instant crop option)
-    /*public Uri getImageUri(Context inContext, Bitmap inImage) {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
-        return Uri.parse(path);
-    }*/
 
     //method responsible for Alert Dialog
     void alertMe(String message) {
