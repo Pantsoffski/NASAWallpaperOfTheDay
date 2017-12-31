@@ -45,7 +45,11 @@ class Utils {
     Bitmap getWallpaper() {
         WallpaperManager wpm = WallpaperManager.getInstance(context);
         BitmapDrawable bitmapDrawable = (BitmapDrawable) wpm.peekDrawable();
-        return bitmapDrawable.getBitmap();
+        if (bitmapDrawable == null) { // if there is no bitmap at current wallpaper, return null value
+            return null;
+        } else {
+            return bitmapDrawable.getBitmap();
+        }
     }
 
     void setWallpaper(Bitmap bitmap) {

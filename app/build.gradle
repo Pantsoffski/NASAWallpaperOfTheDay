@@ -6,8 +6,8 @@ android {
         applicationId 'pl.smartfan.spacewallz'
         minSdkVersion 19
         targetSdkVersion 26
-        versionCode 1
-        versionName "0.9"
+        versionCode 3
+        versionName "0.9.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

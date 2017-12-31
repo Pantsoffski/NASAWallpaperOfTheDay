@@ -28,7 +28,6 @@ import com.github.chrisbanes.photoview.PhotoView;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-// TODO: 30.11.2017 add icons, comments 
 public class MainActivity extends AppCompatActivity implements AsyncResponse {
 
     URL url;
@@ -121,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements AsyncResponse {
 
                 window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 window.setAnimationStyle(R.style.Animation);
+                window.setFocusable(false); //prevent window close when clicked outside
 
                 //set onClickListener for popup window X button
                 xButtonWindow.setOnClickListener(new View.OnClickListener() {
