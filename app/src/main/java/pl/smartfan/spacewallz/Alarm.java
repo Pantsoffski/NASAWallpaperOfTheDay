@@ -75,7 +75,7 @@ public class Alarm extends BroadcastReceiver implements AsyncResponse {
         Intent i = new Intent(context, Alarm.class);
         PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, 0);
         if (am != null) {
-            am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000L * 60 * 60 * 24, pi); // Millis * Second * Minutes * Hours (once per 24 hours now)
+            am.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), AlarmManager.INTERVAL_HALF_DAY, pi); // Ready interval or Millis * Second * Minutes * Hours (once per 24 hours now)
         }
     }
 
