@@ -32,7 +32,9 @@ class Utils {
     //Setting widget data
     void setWidget(String textForWidget) {
         //Prepare text for widget (cut it at 200)
-        textForWidget = textForWidget.substring(0, 200) + "...";
+        if (textForWidget.length() > 200) { //If textForWidget length is less than 200, do not cut
+            textForWidget = textForWidget.substring(0, 200) + "...";
+        }
 
         //Start and fill widget with leeched text
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
